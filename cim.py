@@ -20,7 +20,9 @@ def generate_cim_content(df):
     Returns:
         str: A string containing the full content for the .cim file.
     """
-    # Use newline='\r\n' to ensure Windows-style line endings (CRLF)
+    # Use newline='\r\n' to ensure Windows-style line endings (CRLF).
+    # The write() calls below will now only use '\n', which this object will
+    # automatically convert to the correct '\r\n'.
     output = io.StringIO(newline='\r\n')
 
     # --- CIM FILE STRUCTURE DEFINITION ---
@@ -70,14 +72,14 @@ def generate_cim_content(df):
             dr_acct2 = str(int(dr_acct2_val)) if pd.notna(dr_acct2_val) else '0'
 
 
-            # --- 2. CIM Record Construction (Corrected Format with CRLF and trailing spaces) ---
-            output.write("@@batchload  icunis.p\r\n")
-            output.write(f'"{pt_part}" \r\n')
-            output.write(f'{qty} - - "{site}" "{location}" "" "" \r\n')
-            output.write(f'"{lot_ref}" - - "" "{order_nbr}" {eff_date} {dr_acct1} {dr_acct2} \r\n')
-            output.write("- \r\n")
-            output.write("- \r\n")
-            output.write("@@end\r\n")
+            # --- 2. CIM Record Construction (Corrected to use '\n' which gets converted to '\r\n') ---
+            output.write("@@batchload  icunis.p\n")
+            output.write(f'"{pt_part}" \n')
+            output.write(f'{qty} - - "{site}" "{location}" "" "" \n')
+            output.write(f'"{lot_ref}" - - "" "{order_nbr}" {eff_date} {dr_acct1} {dr_acct2} \n')
+            output.write("- \n")
+            output.write("- \n")
+            output.write("@@end\n")
 
         except Exception as e:
             # If a row fails, we can note it and continue
